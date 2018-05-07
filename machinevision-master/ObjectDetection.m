@@ -33,6 +33,7 @@ for k = 1:length(D)
     src = imread(D(k).name);
     row = size(src,1);
     col = size(src,2);
+    %center_point = [row/2 col/2]
     
     src1 = rgb2gray(src); % convert the original image into black/white
     src2 = medfilt2(src1,[5 5]); %convolution with image with kernel size 5*5
@@ -80,7 +81,7 @@ for k = 1:length(D)
     for i=1:size(list,2)
         %%%%%%%%%%Calculating perimeters of each apple slice%%%%%%%%%
          perimeter = stats(list(i)).Perimeter;
-         center = stats(list(i)).Centroid
+         center = stats(list(i)).Centroid;
          A = stats(list(i)).Area;
          area_list(i,k) = A; %the area(the number of pixels
          box = stats(list(i)).BoundingBox;
@@ -105,25 +106,26 @@ for k = 1:length(D)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
         
         a = stats(list(i)).Centroid;
+        %centers = [a(1) a(2)]
         plot(a(1),a(2),'b*');
         rectangle('Position',stats(list(i)).BoundingBox,'LineWidth',2,'LineStyle','--','EdgeColor','r');
 
         % get five target windows around the centroids
-        ax = round(a(1)-50);
-        ay = round(a(2)-50);
-        rectangle('Position', [ax ay 101 101], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
-        aax = ax - 101;
-        aay = ay;
-        rectangle('Position', [aax aay 101 101], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
-        abx = ax + 101;
-        aby = ay;
-        rectangle('Position', [abx aby 101 101], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
-        alx = ax;
-        aly = ay - 101;
-        rectangle('Position', [alx aly 101 101], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
-        arx = ax;
-        ary = ay + 101;
-        rectangle('Position', [arx ary 101 101], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
+        ax = round(a(1)-75);
+        ay = round(a(2)-75);
+        %rectangle('Position', [ax ay 151 151], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
+        aax = ax;
+        aay = ay - 251;
+        rectangle('Position', [aax aay 151 151], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
+        abx = ax;
+        aby = ay + 251;
+        rectangle('Position', [abx aby 151 151], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
+        alx = ax - 251;
+        aly = ay;
+        rectangle('Position', [alx aly 151 151], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
+        arx = ax + 251;
+        ary = ay;
+        rectangle('Position', [arx ary 151 151], 'LineWidth',1,'LineStyle','-','EdgeColor','r');
         % End get five target windows around the centroids
         
         % Get color mean std for the five windows
@@ -151,9 +153,9 @@ for k = 1:length(D)
         mean_green = zeros(5);
         mean_blue = zeros(5);
 
-
-        if max(ax,row)==row & min(ax-101,1)==1 & max(ay+101,col)==col & min(ay,1)==1
-            color = src(((ax-101):ax), (ay:ay+101), :);
+        %{
+        if max(ax+151,col)==col & min(ax,1)==1 & max(ay+151,row)==row & min(ay,1)==1
+            color = src((ay:ay+151),(ax:(ax+151)),:);
             R_m = color(:, :, 1);
             G_m = color(:, :, 2);
             B_m = color(:, :, 3);
@@ -161,9 +163,10 @@ for k = 1:length(D)
             mean_green(5) = mean2(G_m);
             mean_blue(5) = mean2(B_m);
         end
+        %}
 
-        if max(aax,row)==row & min(aax-101,1)==1 & max(aay+101,col)==col & min(aay,1)==1
-            color = src(((aax-101):aax), (aay:aay+101), :);
+        if max(aax+151,col)==col & min(aax,1)==1 & max(aay+151,row)==row & min(aay,1)==1
+            color = src((aay:(aay+151)),(aax:(aax+151)),:);
             R_a = color(:, :, 1);
             G_a = color(:, :, 2);
             B_a = color(:, :, 3);
@@ -172,8 +175,8 @@ for k = 1:length(D)
             mean_blue(1) = mean2(B_a);
         end
 
-        if max(abx,row)==row & min(abx-101,1)==1 & max(aby+101,col)==col & min(aby,1)==1
-            color = src(((abx-101):abx), (aby:aby+101), :);
+        if max(abx+151,col)==col & min(abx,1)==1 & max(aby+151,row)==row & min(aby,1)==1
+            color = src((aby:(aby+151)),(abx:(abx+151)),:);
             R_b = color(:, :, 1);
             G_b = color(:, :, 2);
             B_b = color(:, :, 3);
@@ -182,8 +185,8 @@ for k = 1:length(D)
             mean_blue(2) = mean2(B_b);
         end
 
-        if max(alx,row)==row & min(alx-101,1)==1 & max(aly+101,col)==col & min(aly,1)==1
-            color  = src(((alx-101):alx), (aly:aly+101), :);
+        if max(alx+151,col)==col & min(alx,1)==1 & max(aly+151,row)==row & min(aly,1)==1
+            color  = src((aly:(aly+151)),(alx:(alx+151)),:);
             R_l = color(:, :, 1);
             G_l = color(:, :, 2);
             B_l = color(:, :, 3);
@@ -193,8 +196,8 @@ for k = 1:length(D)
 
         end
 
-        if max(arx,row)==row & min(arx-101,1)==1 & max(ary+101,col)==col & min(ary,1)==1
-            color = src(((arx-101):arx), (ary:ary+101), :);
+        if max(arx+151,col)==col & min(arx,1)==1 & max(ary+151,row)==row & min(ary,1)==1
+            color = src((ary:(ary+151)),(arx:(arx+151)),:);
             R_r = color(:, :, 1);
             G_r = color(:, :, 2);
             B_r = color(:, :, 3);
@@ -203,13 +206,13 @@ for k = 1:length(D)
             mean_blue(4) = mean2(B_r);
         end
 
-        mean_r = (mean_red(1)+mean_red(2)+mean_red(3)+mean_red(4)+mean_red(5))/5;
-        mean_g = (mean_green(1)+mean_green(2)+mean_green(3)+mean_green(4)+mean_green(5))/5;
-        mean_b = (mean_blue(1)+mean_blue(2)+mean_blue(3)+mean_blue(4)+mean_blue(5))/5;
+        mean_r = (mean_red(1)+mean_red(2)+mean_red(3)+mean_red(4))/5;
+        mean_g = (mean_green(1)+mean_green(2)+mean_green(3)+mean_green(4))/5;
+        mean_b = (mean_blue(1)+mean_blue(2)+mean_blue(3)+mean_blue(4))/5;
 
-        R = [R_m R_a R_b R_l R_r];
-        G = [G_m G_a G_b G_l G_r];
-        B = [B_m B_a B_b B_l B_r];
+        R = [R_a R_b R_l R_r];
+        G = [G_a G_b G_l G_r];
+        B = [B_a B_b B_l B_r];
 
         std_red = std2(R);
         std_green = std2(G);
@@ -235,55 +238,84 @@ for k = 1:length(D)
     idx2 = s(2).PixelIdxList;
     idx3 = s(3).PixelIdxList;
     idx4 = s(4).PixelIdxList;
-    e1 = entropy(src1(idx1));
-    e2 = entropy(src1(idx2));
-    e3 = entropy(src1(idx3));
-    e4 = entropy(src1(idx4));
+    % End Get entropy for each apple slice
+
+    % Get contrast, correlation, energy for each apple slice
+    format short g
+    if stats(list(1)).Area > 400000
+        e1 = round(entropy(src1(idx1)),4);
+        glcm_pro1 = graycoprops(src(idx1));
+        contrast1 = round(glcm_pro1.Contrast,4);
+        correlation1 = round(glcm_pro1.Correlation*(10^17),4);
+        energy1 = round(glcm_pro1.Energy*(10^3),4);
+    else
+        e1 = NaN;
+        contrast1 = NaN;
+        correlation1 = NaN;
+        energy1 = NaN;
+    end
+    
+    if stats(list(2)).Area > 400000
+        e2 = round(entropy(src1(idx2)),4);
+        glcm_pro2 = graycoprops(src(idx2));
+        contrast2 = round(glcm_pro2.Contrast,4);
+        correlation2 = round(glcm_pro2.Correlation*(10^16),4);
+        energy2 = round(glcm_pro2.Energy*(10^3),4);
+    else
+        e2 = NaN;
+        contrast2 = NaN;
+        correlation2 = NaN;
+        energy2 = NaN;
+    end
+    
+    if stats(list(3)).Area > 400000
+        e3 = round(entropy(src1(idx3)),4);
+        glcm_pro3 = graycoprops(src(idx3));
+        contrast3 = round(glcm_pro3.Contrast,4);
+        correlation3 = round(glcm_pro3.Correlation*(10^16),4);
+        energy3 = round(glcm_pro3.Energy*(10^3),4);
+    else
+        e3 = NaN;
+        contrast3 = NaN;
+        correlation3 = NaN;
+        energy3 = NaN;
+    end
+    
+    if stats(list(4)).Area > 400000
+        e4 = round(entropy(src1(idx4)),4);
+        glcm_pro4 = graycoprops(src(idx4));
+        contrast4 = round(glcm_pro4.Contrast,4);
+        correlation4 = round(glcm_pro4.Correlation*(10^16),4);
+        energy4 = round(glcm_pro4.Energy*(10^3),4);
+    else
+        e4 = NaN;
+        contrast4 = NaN;
+        correlation4 = NaN;
+        energy4 = NaN;
+    end
+    
     en_list(1,k) = e1;
     en_list(2,k) = e2;
     en_list(3,k) = e3;
     en_list(4,k) = e4;
     %en_list
-    % End Get entropy for each apple slice
-
-    % Get contrast, correlation, energy for each apple slice
-    format short g
-    glcm_pro1 = graycoprops(src(idx1));
-    contrast1 = glcm_pro1.Contrast;
-    correlation1 = glcm_pro1.Correlation*(10^16);
-    energy1 = glcm_pro1.Energy;
-
-    glcm_pro2 = graycoprops(src(idx2));
-    contrast2 = glcm_pro2.Contrast;
-    correlation2 = glcm_pro2.Correlation*(10^16);
-    energy2 = glcm_pro2.Energy;
     
-    glcm_pro3 = graycoprops(src(idx3));
-    contrast3 = glcm_pro3.Contrast;
-    correlation3 = glcm_pro3.Correlation*(10^16);
-    energy3 = glcm_pro3.Energy;
-    
-    glcm_pro4 = graycoprops(src(idx4));
-    contrast4 = glcm_pro4.Contrast;
-    correlation4 = glcm_pro4.Correlation*(10^16);
-    energy4 = glcm_pro4.Energy;
-    
-    con_list(1,k) = round(contrast1,4);
-    con_list(2,k) = round(contrast2,4);
-    con_list(3,k) = round(contrast3,4);
-    con_list(4,k) = round(contrast4,4);
+    con_list(1,k) = contrast1;
+    con_list(2,k) = contrast2;
+    con_list(3,k) = contrast3;
+    con_list(4,k) = contrast4;
     %con_list
     
-    corr_list(1,k) = round(correlation1,4);
-    corr_list(2,k) = round(correlation2,4);
-    corr_list(3,k) = round(correlation3,4);
-    corr_list(4,k) = round(correlation4,4);
+    corr_list(1,k) = correlation1;
+    corr_list(2,k) = correlation2;
+    corr_list(3,k) = correlation3;
+    corr_list(4,k) = correlation4;
     %corr_list
     
-    ener_list(1,k) = round(energy1,4);
-    ener_list(2,k) = round(energy2,4);
-    ener_list(3,k) = round(energy3,4);
-    ener_list(4,k) = round(energy4,4);
+    ener_list(1,k) = energy1;
+    ener_list(2,k) = energy2;
+    ener_list(3,k) = energy3;
+    ener_list(4,k) = energy4;
     %ener_list
     % End Get contrast, correlation, energy for each apple slice
     
@@ -294,6 +326,75 @@ for k = 1:length(D)
 
 end
 %mean_list  
+
+
+
+% Transfer NaN to mean value
+n1 = nanmean(en_list);
+nn1 = isnan(en_list);
+ii1 = sum(nn1) < 4;
+z1 = en_list(:,ii1);
+z1(nn1(:,ii1)) = nonzeros(bsxfun(@times, nn1(:,ii1), n1(ii1)));
+en_list(:,ii1) = z1;
+
+n2 = nanmean(con_list);
+nn2 = isnan(con_list);
+ii2 = sum(nn2) < 4;
+z2 = con_list(:,ii2);
+z2(nn2(:,ii2)) = nonzeros(bsxfun(@times, nn2(:,ii2), n2(ii2)));
+con_list(:,ii2) = z2;
+
+n3 = nanmean(corr_list);
+nn3 = isnan(corr_list);
+ii3 = sum(nn3) < 4;
+z3 = corr_list(:,ii3);
+z3(nn3(:,ii3)) = nonzeros(bsxfun(@times, nn3(:,ii3), n3(ii3)));
+corr_list(:,ii3) = z3;
+
+n4 = nanmean(ener_list);
+nn4 = isnan(ener_list);
+ii4 = sum(nn4) < 4;
+z4 = ener_list(:,ii4);
+z4(nn4(:,ii4)) = nonzeros(bsxfun(@times, nn4(:,ii4), n4(ii4)));
+ener_list(:,ii4) = z4;
+% End of Transfer NaN to mean value
+
+%all = zeros(length(D),15);
+temp_en = [];
+temp_con = [];
+temp_ener = [];
+temp_corr = [];
+temp_area = [];
+temp_circularity = [];
+temp_cornerpoints = [];
+temp_mean_R = [];
+temp_mean_G = [];
+temp_mean_B = [];
+temp_sd_R = [];
+temp_sd_G = [];
+temp_sd_B = [];
+
+for i = 1:length(D)
+    for j = 1:4
+        temp_en = [temp_en en_list(j,i)];
+        temp_con = [temp_con con_list(j,i)];
+        temp_ener = [temp_ener ener_list(j,i)];
+        temp_corr = [temp_corr corr_list(j,i)];
+        temp_area = [temp_area area_list(j,i)];
+        temp_circularity = [temp_circularity circularity_list(j,i)];
+        temp_cornerpoints = [temp_cornerpoints cornerpoints_list(j,i)];
+        temp_mean_R = [temp_mean_R mean_R_list(j,i)];
+        temp_mean_G = [temp_mean_G mean_G_list(j,i)];
+        temp_mean_B = [temp_mean_B mean_B_list(j,i)];
+        temp_sd_R = [temp_sd_R sd_R_list(j,i)];
+        temp_sd_G = [temp_sd_G sd_G_list(j,i)];
+        temp_sd_B = [temp_sd_B sd_B_list(j,i)];
+    end
+end
+
+all = horzcat(temp_en',temp_con',temp_ener',temp_corr',temp_area',temp_circularity',temp_cornerpoints',temp_mean_R',temp_mean_G',temp_mean_B',temp_sd_R',temp_sd_G',temp_sd_B')
+
+%{
 en_list  
 con_list   
 ener_list  
@@ -307,10 +408,4 @@ mean_B_list
 sd_R_list
 sd_G_list
 sd_B_list
-
-% Transfer NaN to 0
-en_list(isnan(en_list))=0;
-con_list(isnan(con_list))=0;
-corr_list(isnan(corr_list))=0;
-ener_list(isnan(ener_list))=0;
-% End of Transfer NaN to 0
+%}
