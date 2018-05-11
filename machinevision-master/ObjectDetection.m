@@ -27,6 +27,7 @@ mean_B_list = zeros(4,length(D));
 sd_R_list = zeros(4,length(D));
 sd_G_list = zeros(4,length(D));
 sd_B_list = zeros(4,length(D));
+lbp_list = zeros(4, length(D), 59);
 
 % loop over all the images in the folder
 for k = 1:length(D)
@@ -109,6 +110,12 @@ for k = 1:length(D)
         %centers = [a(1) a(2)]
         plot(a(1),a(2),'b*');
         rectangle('Position',stats(list(i)).BoundingBox,'LineWidth',2,'LineStyle','--','EdgeColor','r');
+        
+                
+        % Get extract lbp features in each window
+        J = imcrop(src1, stats(list(i)).BoundingBox);
+        lbp = extractLBPFeatures(J); 
+        lbp_list(i, k, :) = lbp(:);
 
         % get five target windows around the centroids
         ax = round(a(1)-75);
@@ -392,7 +399,16 @@ for i = 1:length(D)
     end
 end
 
-all = horzcat(temp_en',temp_con',temp_ener',temp_corr',temp_area',temp_circularity',temp_cornerpoints',temp_mean_R',temp_mean_G',temp_mean_B',temp_sd_R',temp_sd_G',temp_sd_B')
+temp = reshape(lbp_list, 1, 4*length(D), 59);
+
+temp_lbp = zeros(59, 4*length(D));
+for s = 1:4*length(D)
+    for p = 1:59
+        temp_lbp(p, 1:4*length(D)) = temp(1, 1:4*length(D), p);
+    end
+end
+
+all = horzcat(temp_en',temp_con',temp_ener',temp_corr',temp_area',temp_circularity',temp_cornerpoints',temp_mean_R',temp_mean_G',temp_mean_B',temp_sd_R',temp_sd_G',temp_sd_B', temp_lbp')
 
 %{
 en_list  
